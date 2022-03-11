@@ -296,6 +296,7 @@ class MainActivity : AppCompatActivity() {
                 2 -> {
                     outputNumberSystem = 3
                     outputType?.text = "TRN(3)"
+
                 }
                 3 -> {
                     outputNumberSystem = 4
@@ -318,6 +319,7 @@ class MainActivity : AppCompatActivity() {
                     outputType?.text = "BNR(2)"
                 }
             }
+            convertInput(inputText?.text.toString(), inputNumberSystem, outputNumberSystem)
         }
 // Input Buttons Ends......
 
