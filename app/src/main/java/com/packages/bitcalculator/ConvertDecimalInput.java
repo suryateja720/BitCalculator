@@ -2,66 +2,95 @@ package com.packages.bitcalculator;
 
 public class ConvertDecimalInput {
 
+    Integer fractionPrecision = 64;
+    Integer decimalPrecision = 32;
+
     ConvertDecimalInput() {
     }
 
     String ConvertToBNR(String d) {
-        String integerBinary = "";
-        String fractionBinary = "0";
-        String[] decimal = {"0", "0"};
-        int integerPart = 0;
-        double fractionPart = 0.0;
+        String result = "";
+        Double input = Double.parseDouble(d);
 
-        if (d.contains(".") && d.charAt(d.length() - 1) != '.') {
-            decimal[0] = d.substring(0, d.indexOf("."));
-            decimal[1] = d.substring(d.indexOf(".") + 1);
-        } else if (d.contains(".")) {
-            decimal[0] = d.substring(0, d.indexOf("."));
+        Integer breakPoint = input.toString().indexOf('.');
+        Integer fractionLength = input.toString().length() - breakPoint;
+
+        Integer decimalPart;
+        Integer fractionPart;
+
+
+        StringBuilder fractionBinaryString = new StringBuilder();
+        StringBuilder decimalBinaryString = new StringBuilder();
+        String decimalBinary;
+        String fractionBinary;
+        Integer sizeExtension = 0;
+
+
+        if (!d.contains(".")) {
+            //xyz
+            decimalPart = Integer.parseInt(d);
+            fractionPart = 0;
+            decimalBinary = Integer.toBinaryString(decimalPart);
+            fractionBinary = Integer.toBinaryString(fractionPart);
+
+            sizeExtension = decimalPrecision - decimalBinary.length();
+            for (int i = 1; i < sizeExtension; i++) {
+                decimalBinaryString.append("0");
+            }
+            decimalBinaryString.append(decimalBinary);
+
+            sizeExtension = fractionPrecision - fractionBinary.length();
+            for (int i = 1; i < sizeExtension; i++) {
+                fractionBinaryString.append("0");
+            }
+            fractionBinaryString.append(fractionBinary);
+
         } else {
-            decimal[0] = d;
+
+            if (d.indexOf('.') + 1 == d.length()) {
+                //xyz.
+                decimalPart = Integer.parseInt(d.substring(0, d.indexOf('.')));
+                fractionPart = 0;
+
+                decimalBinary = Integer.toBinaryString(decimalPart);
+                fractionBinary = Integer.toBinaryString(fractionPart);
+
+                sizeExtension = decimalPrecision - decimalBinary.length();
+                for (int i = 1; i < sizeExtension; i++) {
+                    decimalBinaryString.append("0");
+                }
+                decimalBinaryString.append(decimalBinary);
+
+                sizeExtension = fractionPrecision - fractionBinary.length();
+                for (int i = 1; i < sizeExtension; i++) {
+                    fractionBinaryString.append("0");
+                }
+                fractionBinaryString.append(fractionBinary);
+
+            } else {
+                //xyz.abc
+                decimalPart = Integer.parseInt(d.substring(0, d.indexOf('.')));
+                decimalBinary = Integer.toBinaryString(decimalPart);
+
+                sizeExtension = decimalPrecision - decimalBinary.length();
+                for (int i = 1; i < sizeExtension; i++) {
+                    decimalBinaryString.append("0");
+                }
+                decimalBinaryString.append(decimalBinary);
+
+                Double fraction = Double.parseDouble("0." + d.substring(d.indexOf('.') + 1));
+                for (int i = 1; i < fractionPrecision; i++) {
+                    fraction = fraction * 2;
+                    if (fraction < 1.0) fractionBinaryString.append("0");
+                    else {
+                        fraction = fraction - 1.0;
+                        fractionBinaryString.append("1");
+                    }
+                }
+            }
         }
-
-        if (decimal[0].length() != 0) {
-            integerPart = Integer.parseInt(decimal[0]);
-        }
-
-        if (decimal[1].length() != 0 && d.contains(".")) {
-            fractionPart = Integer.parseInt(decimal[1]) / Math.pow(10, decimal[1].length());
-        } else {
-            fractionPart = 0.0;
-        }
-        int limit = 0;
-        StringBuilder iBuilder = new StringBuilder();
-
-        while (integerPart != 1) {
-            limit++;
-            iBuilder.append(integerPart % 2);
-            integerPart = integerPart / 2;
-        }
-        iBuilder.append("1");
-        iBuilder.reverse();
-        integerBinary = iBuilder.toString();
-
-
-        int f;
-        limit = 0;
-        StringBuilder fBuilder = new StringBuilder();
-
-        while (fractionPart != 0.0 && limit < 10) {
-
-            f = (int) (fractionPart * 2);
-            fBuilder.append(f);
-            fractionPart = (fractionPart * 2) - (int)(fractionPart * 2);
-            limit++;
-        }
-
-        fractionBinary = fBuilder.toString();
-
-        if(d.contains(".")){
-            return integerBinary + "." + fractionBinary;
-        }else{
-            return integerBinary ;
-        }
+        result = decimalBinaryString + "." + fractionBinaryString;
+        return result.toString();
     }
 
     String ConvertToTRN(String d) {

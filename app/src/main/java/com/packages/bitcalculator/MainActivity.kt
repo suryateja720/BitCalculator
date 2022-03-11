@@ -8,7 +8,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 
 var resultDisplay: TextView? = null
 var inputText: TextView? = null
@@ -62,6 +61,9 @@ var previousOperation: Int? = null
 var currentOperation: Int? = null
 
 var refreshTime: Long = 0
+var decimalPartLimit: Int = 9
+var fractionPartLimit: Int = 16
+
 
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
@@ -113,10 +115,11 @@ class MainActivity : AppCompatActivity() {
         resultDisplay = findViewById(R.id.result_display)
         inputText = findViewById(R.id.input_text)
 
-        digitsLimit = 8
+        digitsLimit = decimalPartLimit + fractionPartLimit + 1
 
         inputType?.text = "DEC(10)"
         inputNumberSystem = 10
+        disableAllInputButtons()
         alterInputButtons(inputNumberSystem)
         outputType?.text = "DEC(10)"
         outputNumberSystem = 10
@@ -133,6 +136,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+//Input Buttons...
         dot?.setOnClickListener {
             if ((inputText?.text?.length!! < digitsLimit) && !(inputText?.text?.contains('.')!!)) {
                 if (inputText?.text?.isEmpty()!!) {
@@ -143,82 +147,83 @@ class MainActivity : AppCompatActivity() {
             }
         }
         n0?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}0"
             }
         }
         n1?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}1"
             }
         }
         n2?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}2"
             }
         }
         n3?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}3"
             }
         }
         n4?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}4"
             }
         }
         n5?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}5"
             }
         }
         n6?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}6"
             }
         }
         n7?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}7"
             }
         }
         n8?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}8"
             }
         }
         n9?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}9"
             }
         }
         nA?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}A"
             }
         }
         nB?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}B"
             }
         }
         nC?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}C"
             }
         }
         nD?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}D"
             }
         }
         nE?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}E"
             }
         }
         nF?.setOnClickListener {
-            if (inputText?.text?.length!! < digitsLimit) {
+            if (inputText?.text?.length!! < digitsLimit && checkForLimits()) {
                 inputText?.text = "${inputText?.text}F"
             }
         }
@@ -235,7 +240,6 @@ class MainActivity : AppCompatActivity() {
         add?.setOnClickListener {
             currentOperation = 0
             newOperation()
-
         }
         substract?.setOnClickListener {
             currentOperation = 1
@@ -252,11 +256,9 @@ class MainActivity : AppCompatActivity() {
         equal?.setOnClickListener {
             newOperation()
         }
-
         inputType?.setOnClickListener {
             disableAllInputButtons()
             when (inputNumberSystem) {
-
                 2 -> {
                     inputNumberSystem = 3
                     inputType?.text = "TRN(3)"
@@ -287,12 +289,10 @@ class MainActivity : AppCompatActivity() {
                     inputType?.text = "BNR(2)"
                     alterInputButtons(inputNumberSystem)
                 }
-
             }
         }
         outputType?.setOnClickListener {
             when (outputNumberSystem) {
-
                 2 -> {
                     outputNumberSystem = 3
                     outputType?.text = "TRN(3)"
@@ -317,10 +317,18 @@ class MainActivity : AppCompatActivity() {
                     outputNumberSystem = 2
                     outputType?.text = "BNR(2)"
                 }
-
             }
         }
+// Input Buttons Ends......
 
+    }
+
+    private fun checkForLimits(): Boolean {
+        return if (inputText?.text!!.contains(".")) {
+            inputText?.text!!.split(".")[1].length < fractionPartLimit
+        } else {
+            inputText?.text!!.split(".")[0].length < decimalPartLimit
+        }
     }
 
     private fun disableAllInputButtons() {
@@ -425,6 +433,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun alterInputButtons(inputSystem: Int) {
         inputText?.text = ""
+        inputType?.isEnabled = false
         Handler().postDelayed({
             if (inputSystem > 0) {
                 n0?.isEnabled = inputSystem > 0
@@ -552,7 +561,9 @@ class MainActivity : AppCompatActivity() {
             } else {
                 nF?.setTextColor(resources.getColor(R.color.grey_light))
             }
+            inputType?.isEnabled = true
         }, 850)
+
     }
 
     @SuppressLint("SetTextI18n")
