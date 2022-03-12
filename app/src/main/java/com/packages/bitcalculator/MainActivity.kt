@@ -263,31 +263,50 @@ class MainActivity : AppCompatActivity() {
                     inputNumberSystem = 3
                     inputType?.text = "TRN(3)"
                     alterInputButtons(inputNumberSystem)
+                    decimalPartLimit = 16
+                    fractionPartLimit = 16
+                    digitsLimit = decimalPartLimit + fractionPartLimit + 1
+
                 }
                 3 -> {
                     inputNumberSystem = 4
                     inputType?.text = "QDR(4)"
                     alterInputButtons(inputNumberSystem)
+                    decimalPartLimit = 9
+                    fractionPartLimit = 16
+                    digitsLimit = decimalPartLimit + fractionPartLimit + 1
                 }
                 4 -> {
                     inputNumberSystem = 8
                     inputType?.text = "OCT(8)"
                     alterInputButtons(inputNumberSystem)
+                    decimalPartLimit = 9
+                    fractionPartLimit = 16
+                    digitsLimit = decimalPartLimit + fractionPartLimit + 1
                 }
                 8 -> {
                     inputNumberSystem = 10
                     inputType?.text = "DEC(10)"
                     alterInputButtons(inputNumberSystem)
+                    decimalPartLimit = 9
+                    fractionPartLimit = 16
+                    digitsLimit = decimalPartLimit + fractionPartLimit + 1
                 }
                 10 -> {
                     inputNumberSystem = 16
                     inputType?.text = "HEX(16)"
                     alterInputButtons(inputNumberSystem)
+                    decimalPartLimit = 9
+                    fractionPartLimit = 16
+                    digitsLimit = decimalPartLimit + fractionPartLimit + 1
                 }
                 16 -> {
                     inputNumberSystem = 2
                     inputType?.text = "BNR(2)"
                     alterInputButtons(inputNumberSystem)
+                    decimalPartLimit = 9
+                    fractionPartLimit = 16
+                    digitsLimit = decimalPartLimit + fractionPartLimit + 1
                 }
             }
         }
@@ -375,11 +394,12 @@ class MainActivity : AppCompatActivity() {
             when (inputSystem) {
                 2 -> {
                     when (outputSystem) {
-                        2 -> resultDisplay?.text = ConvertDecimalInput().ConvertToBNR(input)
-                        3 -> resultDisplay?.text = ConvertDecimalInput().ConvertToTRN(input)
-                        4 -> resultDisplay?.text = ConvertDecimalInput().ConvertToQDR(input)
-                        8 -> resultDisplay?.text = ConvertDecimalInput().ConvertToOCT(input)
-                        16 -> resultDisplay?.text = ConvertDecimalInput().ConvertToHEX(input)
+                        2 -> resultDisplay?.text = input
+                        3 -> resultDisplay?.text = ConvertBinaryInput().ConvertToTRN(input)
+                        4 -> resultDisplay?.text = ConvertBinaryInput().ConvertToQDR(input)
+                        8 -> resultDisplay?.text = ConvertBinaryInput().ConvertToOCT(input)
+                        10 -> resultDisplay?.text = ConvertBinaryInput().ConvertToDEC(input)
+                        16 -> resultDisplay?.text = ConvertBinaryInput().ConvertToHEX(input)
                     }
                 }
                 3 -> {
